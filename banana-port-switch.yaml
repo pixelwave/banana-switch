@@ -1,0 +1,40 @@
+substitutions:
+  # PROJECT 
+  friendly_name:  (OFFICE) Banana Port Switch
+  device_name:    banana-port-switch
+  comment:        "Switches Banana Ports +/- (4x)"
+
+  # BTN w/LED → Power Supply
+  BTN_PS_NO:   GPIO42
+  BTN_PS_LED:  GPIO41
+
+  # BTN w/LED → Multimeter
+  BTN_MM_NO:   GPIO44
+  BTN_MM_LED:  GPIO43
+
+  # BTN w/LED → Relay
+  BTN_R1_NO:   GPIO21
+  BTN_R1_LED:  GPIO20
+  BTN_R2_NO:   GPIO19
+  BTN_R2_LED:  GPIO11
+  BTN_R3_NO:   GPIO12
+  BTN_R3_LED:  GPIO13  
+  BTN_R4_NO:   GPIO10
+  BTN_R4_LED:  GPIO9
+
+  # 4CH Relay Ports
+  Relay_1:     GPIO40
+  Relay_2:     GPIO39
+  Relay_3:     GPIO23
+  Relay_4:     GPIO22
+
+
+### ==========================================================
+### ▼ PACKAGES ▼
+### ==========================================================
+
+packages:
+  esphome:      !include esphome.yaml
+  board:        !include m5stack-p4-poe.yaml
+  hardware:     !include hardware.yaml
+  components:   !include components.yaml

@@ -1,0 +1,141 @@
+### ============================
+### ▼ HARDWARE ▼
+### ============================
+
+switch:
+  # 4CH Relay Onboard Switches
+  - platform: gpio
+    name: "Relay 1"
+    pin: ${Relay_1}
+    id: relay_1
+    inverted: true                      # ← Critical: most modules are active-LOW
+    restore_mode: RESTORE_DEFAULT_OFF   # safe boot state
+    interlock: &relay_interlock_group [relay_1, relay_2, relay_3, relay_4] # ONLY 1 Relay can be active
+    interlock_wait_time: 50ms           # ← safety break-before-make (adjust 20-100ms as needed)
+    on_turn_on:
+      - output.turn_on: led_relay_1
+    on_turn_off:
+      - output.turn_off: led_relay_1
+  - platform: gpio
+    name: "Relay 2"
+    pin: ${Relay_2}
+    id: relay_2
+    inverted: true 
+    restore_mode: RESTORE_DEFAULT_OFF
+    interlock: *relay_interlock_group
+    interlock_wait_time: 50ms
+    on_turn_on:
+      - output.turn_on: led_relay_2
+    on_turn_off:
+      - output.turn_off: led_relay_2
+  - platform: gpio
+    name: "Relay 3"
+    pin: ${Relay_3}
+    id: relay_3
+    inverted: true 
+    restore_mode: RESTORE_DEFAULT_OFF
+    interlock: *relay_interlock_group
+    interlock_wait_time: 50ms
+    on_turn_on:
+      - output.turn_on: led_relay_3
+    on_turn_off:
+      - output.turn_off: led_relay_3
+  - platform: gpio
+    name: "Relay 4"
+    pin: ${Relay_4}
+    id: relay_4
+    inverted: true 
+    restore_mode: RESTORE_DEFAULT_OFF
+    interlock: *relay_interlock_group
+    interlock_wait_time: 50ms
+    on_turn_on:
+      - output.turn_on: led_relay_4
+    on_turn_off:
+      - output.turn_off: led_relay_4
+
+binary_sensor:
+  # Physical buttons → Power Supply & Multimeter
+  - platform: gpio
+    pin:
+      number: ${BTN_MM_NO}
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Button - Multimeter"
+    id: button_multimeter
+    filters:
+      - delayed_on_off: 50ms
+  - platform: gpio
+    pin:
+      number: ${BTN_PS_NO}
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Button - Power Supply"
+    id: button_powersupply
+    filters:
+      - delayed_on_off: 50ms
+
+  # Physical buttons → Relays (1-4)
+  - platform: gpio
+    pin:
+      number: ${BTN_R1_NO}
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Button - Relay 1"
+    filters:
+      - delayed_on_off: 50ms
+    on_press:
+      - switch.toggle: relay_1
+  - platform: gpio
+    pin:
+      number: ${BTN_R2_NO}
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Button - Relay 2"
+    filters:
+      - delayed_on_off: 50ms
+    on_press:
+      - switch.toggle: relay_2
+  - platform: gpio
+    pin:
+      number: ${BTN_R3_NO}
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Button - Relay 3"
+    filters:
+      - delayed_on_off: 50ms
+    on_press:
+      - switch.toggle: relay_3
+  - platform: gpio
+    pin:
+      number: ${BTN_R4_NO}
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Button - Relay 4"
+    filters:
+      - delayed_on_off: 50ms
+    on_press:
+      - switch.toggle: relay_4
+
+# LED OUTPUTS - direct GPIO control (active-high)
+output:
+  # Power Button LED's
+  - platform: gpio
+    pin: ${BTN_MM_LED}
+    id: led_multimeter
+  - platform: gpio
+    pin: ${BTN_PS_LED}
+    id: led_powersupply
+
+  # Relay Button LED's
+  - platform: gpio
+    pin: ${BTN_R1_LED}
+    id: led_relay_1
+  - platform: gpio
+    pin: ${BTN_R2_LED}
+    id: led_relay_2
+  - platform: gpio
+    pin: ${BTN_R3_LED}
+    id: led_relay_3
+  - platform: gpio
+    pin: ${BTN_R4_LED}
+    id: led_relay_4

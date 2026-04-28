@@ -1,0 +1,33 @@
+switch:
+  # Restart Switch
+  - platform: restart
+    name: "Restart Device"
+
+binary_sensor:
+  # IMPORT PDU STATES FROM HOME ASSISTANT → SYNC LEDs
+  - platform: homeassistant
+    id: pdu_port_1_state
+    entity_id: switch.pdu_2_port_1_switch
+    internal: true
+    on_state:
+      then:
+        - if:
+            condition:
+              binary_sensor.is_on: pdu_port_1_state
+            then:
+              - output.turn_on: led_powersupply
+            else:
+              - output.turn_off: led_powersupply
+  - platform: homeassistant
+    id: pdu_port_12_state
+    entity_id: switch.pdu_2_port_12_switch
+    internal: true
+    on_state:
+      then:
+        - if:
+            condition:
+              binary_sensor.is_on: pdu_port_12_state
+            then:
+              - output.turn_on: led_multimeter
+            else:
+              - output.turn_off: led_multimeter

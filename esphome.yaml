@@ -1,0 +1,54 @@
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+  comment: ${comment}
+
+  # ================= ▼ BOOT CHECK ▼ =======================
+  on_boot:
+    priority: -200.0
+    then:
+      # Force both LEDs OFF immediately (clears any boot glitch)
+      - output.turn_off: led_multimeter
+      - output.turn_off: led_powersupply
+      # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
+      # GUARANTEED RELAY SAFETY: All relays + LEDs OFF at boot
+      - switch.turn_off: relay_1
+      - switch.turn_off: relay_2
+      - switch.turn_off: relay_3
+      - switch.turn_off: relay_4
+      # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
+      - wait_until: api.connected
+      - delay: 1.5s
+      # Update Power Supply & Multimeter Switch State from HA
+      - lambda: |-
+          ESP_LOGI("boot", "=== Syncing Status LEDs with PDU States ===");
+          bool port1_on  = id(pdu_port_1_state).state;
+          bool port12_on = id(pdu_port_12_state).state;
+          ESP_LOGI("boot", "Port 1  received: %s", port1_on ? "ON" : "OFF");
+          ESP_LOGI("boot", "Port 12 received: %s", port12_on ? "ON" : "OFF");
+          if (port1_on) {
+            id(led_powersupply).turn_on();           
+            ESP_LOGI("boot", "→ LED Power Supply turned ON");
+          } else {
+            id(led_powersupply).turn_off();
+            ESP_LOGI("boot", "→ LED Power Supply turned OFF");
+          }
+          if (port12_on) {
+            id(led_multimeter).turn_on();          
+            ESP_LOGI("boot", "→ LED Multimeter turned ON");
+          } else {
+            id(led_multimeter).turn_off();
+            ESP_LOGI("boot", "→ LED Multimeter turned OFF");
+          }
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "..."
+
+ota:
+  - platform: esphome
+    password: "..."
